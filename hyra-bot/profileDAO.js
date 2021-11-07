@@ -16,7 +16,7 @@ class FileDAO {
     }
 
     load(cb) {
-        fs.readFile(this.SAVE_FILE_PATH, 'utf8', ((err, data) => cb(err, data)));
+        fs.readFile(this.SAVE_FILE_PATH, 'utf8', ((err, data) => cb(err, JSON.parse(data))));
     }
 }
 
@@ -103,12 +103,11 @@ class ProfileDAO {
     }
 
     read(cb) {
-        this.DAO.load((err, data) => {
+        this.DAO.load((err, parsedData) => {
             if (err) {
                 console.error(err)
                 this.users = {}
             } else {
-                const parsedData = JSON.parse(data);
                 for (const parsedDataKey in parsedData) {
                     parsedData[parsedDataKey].elyonClass = Classes[parsedData[parsedDataKey].elyonClass]
                 }
