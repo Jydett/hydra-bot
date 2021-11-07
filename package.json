@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "launch": "node hyra-bot/index.js",
+    "start": "node hyra-bot/index.js",
     "register commands": "node hyra-bot/slash_commands.js"
   },
   "keywords": [],
