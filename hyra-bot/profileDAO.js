@@ -113,6 +113,7 @@ class ProfileDAO {
                 }
                 this.users = parsedData;
                 console.log('Loaded ' + Object.keys(this.users).length + ' user(s)');
+                console.log(this.users);
             }
             cb()
         })
