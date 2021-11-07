@@ -39,12 +39,24 @@ class PostgresDAO {
     }
 
     save(data) {
+        this.client = new Client({
+            connectionString: process.env.DATABASE_URL,
+            ssl: {
+                rejectUnauthorized: false
+            }
+        })
         this.client.connect();
         client.query('UPDATE data SET data = $1 WHERE 1=1', data)
         this.client.end();
     }
 
     load() {
+        this.client = new Client({
+            connectionString: process.env.DATABASE_URL,
+            ssl: {
+                rejectUnauthorized: false
+            }
+        })
         this.client.connect();
         const {rows} = client.query('SELECT data FROM data LIMIT 1')
         this.client.end();
