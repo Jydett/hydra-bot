@@ -58,7 +58,7 @@ class PostgresDAO {
             }
         })
         this.client.connect();
-        const {rows} = client.query('SELECT data FROM data LIMIT 1')
+        const {rows} = this.client.query('SELECT data FROM data LIMIT 1')
         this.client.end();
         return rows[0];
     }
