@@ -1,11 +1,65 @@
-const fs = require('fs')
 const {Classes} = require('./classes');
+const {Client} = require('pg');
+const {client} = require('./client');
+const fs = require('fs');
 
 const SAVE_FILE_PATH = './users.json';
+
+class FileDAO {
+    constructor(path) {
+        this.SAVE_FILE_PATH = path;
+    }
+
+    save(data) {
+        fs.writeFileSync(this.SAVE_FILE_PATH, JSON.stringify(data))
+    }
+
+    load() {
+        return fs.readFileSync(this.SAVE_FILE_PATH, 'utf8');
+    }
+}
+
+class PostgresDAO {
+     constructor() {
+        this.client = new Client({
+            connectionString: process.env.DATABASE_URL,
+            ssl: {
+                rejectUnauthorized: false
+            }
+        })
+
+        this.client.connect();
+        this.client.query('CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY AUTO_INCREMENT, data JSONB)', (err, res) => {
+            if (err) throw err;
+            this.client.query('INSERT INTO data(id, data) VALUES (1, null)', (err, res) => {
+                this.client.end();
+            })
+        })
+
+    }
+
+    save(data) {
+        this.client.connect();
+        client.query('UPDATE data SET data = $1 WHERE 1=1', data)
+        this.client.end();
+    }
+
+    load() {
+        this.client.connect();
+        const {rows} = client.query('SELECT data FROM data LIMIT 1')
+        this.client.end();
+        return rows[0];
+    }
+}
 
 class ProfileDAO {
 
     constructor() {
+        if (process.env.NODE_ENV !== 'prod') {
+            this.DAO = new FileDAO(SAVE_FILE_PATH);
+        } else {
+            this.DAO = new PostgresDAO();
+        }
         console.log("ProfileDAO created")
         const this_ = this;
         this.read();
@@ -28,7 +82,7 @@ class ProfileDAO {
                 return u;
             });
         try {
-            fs.writeFileSync(SAVE_FILE_PATH, JSON.stringify(this.users))
+            this.DAO.save(JSON.stringify(this.users))
         } catch (err) {
             console.error(err)
         }
@@ -36,7 +90,8 @@ class ProfileDAO {
 
     read() {
         try {
-            const parsedData = JSON.parse(fs.readFileSync(SAVE_FILE_PATH, 'utf8'));
+            const text = this.DAO.load();
+            const parsedData = JSON.parse(text);
             for (const parsedDataKey in parsedData) {
                 parsedData[parsedDataKey].elyonClass = Classes[parsedData[parsedDataKey].elyonClass]
             }
@@ -45,7 +100,6 @@ class ProfileDAO {
         } catch (err) {
             console.error(err)
             this.users = {}
-            return
         }
     }
 
