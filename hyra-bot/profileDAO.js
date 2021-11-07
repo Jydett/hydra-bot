@@ -21,23 +21,7 @@ class FileDAO {
 }
 
 class PostgresDAO {
-     constructor() {
-        this.client = new Client({
-            connectionString: process.env.DATABASE_URL,
-            ssl: {
-                rejectUnauthorized: false
-            }
-        })
-
-        this.client.connect();
-        this.client.query('CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY, data JSONB)', (err, res) => {
-            if (err) throw err;
-            this.client.query('INSERT INTO data(id, data) VALUES (1, $1)', {}, (err, res) => {
-                this.client.end();
-            })
-        })
-
-    }
+    init = false;
 
     save(data) {
         this.client = new Client({
@@ -61,6 +45,17 @@ class PostgresDAO {
             }
         })
         this.client.connect();
+        if (! this.init) {
+            this.client.query('CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY, data JSONB)', (err, res) => {
+                if (err) throw err;
+                this.client.query('INSERT INTO data(id, data) VALUES (1, $1)', {}, (err, res) => {
+                    this.client.end();
+                    this.init = true;
+                    this.load(cb);
+                })
+            })
+            return
+        }
         this.client.query('SELECT data FROM data LIMIT 1', (err, res) => {
             this.client.end();
             cb(err, res)
