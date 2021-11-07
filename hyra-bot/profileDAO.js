@@ -32,7 +32,7 @@ class PostgresDAO {
         this.client.connect();
         this.client.query('CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY, data JSONB)', (err, res) => {
             if (err) throw err;
-            this.client.query('INSERT INTO data(id, data) VALUES (1, null)', (err, res) => {
+            this.client.query('INSERT INTO data(id, data) VALUES (1, $1)', {}, (err, res) => {
                 this.client.end();
             })
         })
