@@ -62,7 +62,7 @@ class PostgresDAO {
         this.client.query('SELECT data FROM data LIMIT 1', (err, res) => {
             if (err) throw err;
             this.client.end();
-            cb(err, res)
+            cb(err, res.rows[0])
         });
     }
 }
