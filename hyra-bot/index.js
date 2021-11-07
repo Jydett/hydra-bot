@@ -2,16 +2,19 @@ const config = require("./config.json");
 const Commands = require("./commands.js");
 const {client} = require("./client.js")
 const {fakeUsers} = require('./debug');
+const {ProfileDAO} = require('./profileDAO');
 
 console.log('ENV: ' + process.env.NODE_ENV)
 
-client.once('ready', () => {
-    console.log('Ready!');
-});
+ProfileDAO.read(_ => {
+    client.once('ready', () => {
+        console.log('Ready!');
+    });
 
-Commands.register();
-if (process.env.NODE_ENV !== 'prod') {
-    fakeUsers();
-}
+    Commands.register();
+    if (process.env.NODE_ENV !== 'prod') {
+        fakeUsers();
+    }
 
-client.login(config.BOT_TOKEN);
+    client.login(config.BOT_TOKEN);
+})

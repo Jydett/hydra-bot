@@ -4,6 +4,7 @@ const {client} = require('./client');
 const fs = require('fs');
 
 const SAVE_FILE_PATH = './users.json';
+const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
 
 class FileDAO {
     constructor(path) {
@@ -14,8 +15,8 @@ class FileDAO {
         fs.writeFileSync(this.SAVE_FILE_PATH, JSON.stringify(data))
     }
 
-    load() {
-        return fs.readFileSync(this.SAVE_FILE_PATH, 'utf8');
+    load(cb) {
+        fs.readFile(this.SAVE_FILE_PATH, 'utf8', ((err, data) => cb(err, data)));
     }
 }
 
@@ -46,11 +47,13 @@ class PostgresDAO {
             }
         })
         this.client.connect();
-        this.client.query('UPDATE data SET data = $1 WHERE 1=1', data)
-        this.client.end();
+        this.client.query('UPDATE data SET data = $1 WHERE 1=1', data, (err, res) => {
+            if (err) throw err;
+            this.client.end();
+        })
     }
 
-    load() {
+    load(cb) {
         this.client = new Client({
             connectionString: process.env.DATABASE_URL,
             ssl: {
@@ -58,9 +61,10 @@ class PostgresDAO {
             }
         })
         this.client.connect();
-        const {rows} = this.client.query('SELECT data FROM data LIMIT 1')
-        this.client.end();
-        return rows[0];
+        this.client.query('SELECT data FROM data LIMIT 1', (err, res) => {
+            this.client.end();
+            cb(err, res)
+        });
     }
 }
 
@@ -74,7 +78,6 @@ class ProfileDAO {
         }
         console.log("ProfileDAO created")
         const this_ = this;
-        this.read();
         process.on('SIGINT', function() {
             console.log('About to exit, saving users');
             this_.write();
@@ -94,25 +97,27 @@ class ProfileDAO {
                 return u;
             });
         try {
-            this.DAO.save(JSON.stringify(this.users))
+            this.DAO.save(this.users)
         } catch (err) {
             console.error(err)
         }
     }
 
-    read() {
-        try {
-            const text = this.DAO.load();
-            const parsedData = JSON.parse(text);
-            for (const parsedDataKey in parsedData) {
-                parsedData[parsedDataKey].elyonClass = Classes[parsedData[parsedDataKey].elyonClass]
+    read(cb) {
+        this.DAO.load((err, data) => {
+            if (err) {
+                console.error(err)
+                this.users = {}
+            } else {
+                const parsedData = JSON.parse(data);
+                for (const parsedDataKey in parsedData) {
+                    parsedData[parsedDataKey].elyonClass = Classes[parsedData[parsedDataKey].elyonClass]
+                }
+                this.users = parsedData;
+                console.log('Loaded ' + Object.keys(this.users).length + ' user(s)');
             }
-            this.users = parsedData;
-            console.log('Loaded ' + Object.keys(this.users).length + ' user(s)');
-        } catch (err) {
-            console.error(err)
-            this.users = {}
-        }
+            cb()
+        })
     }
 
     fromId(id) {
