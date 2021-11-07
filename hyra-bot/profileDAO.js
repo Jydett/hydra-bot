@@ -13,7 +13,7 @@ class ProfileDAO {
             console.log('About to exit, saving users');
             this_.write();
         });
-        process.on('end', function() {
+        process.on('SIGTERM', function() {
             console.log('About to exit, saving users');
             this_.write();
         });
