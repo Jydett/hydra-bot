@@ -31,7 +31,7 @@ class PostgresDAO {
             }
         })
         this.client.connect();
-        this.client.query('UPDATE data SET data = $1 WHERE 1=1', data, (err, res) => {
+        this.client.query('UPDATE data SET data = $1 WHERE 1=1', [data], (err, res) => {
             if (err) throw err;
             this.client.end();
         })
@@ -49,7 +49,7 @@ class PostgresDAO {
             this.client.query('CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY, data JSONB)', (err, res) => {
                 if (err) throw err;
                 console.log("Table created")
-                this.client.query('INSERT INTO data(id, data) VALUES (1, $1)', {}, (err, res) => {
+                this.client.query('INSERT INTO data(id, data) VALUES (1, $1)', [{}], (err, res) => {
                     if (err) throw err;
                     console.log("Row inserted")
                     this.client.end();
