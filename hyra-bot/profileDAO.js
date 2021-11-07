@@ -13,6 +13,10 @@ class ProfileDAO {
             console.log('About to exit, saving users');
             this_.write();
         });
+        process.on('end', function() {
+            console.log('About to exit, saving users');
+            this_.write();
+        });
     }
 
     //TODO degeu on ecrit sur le buffer
