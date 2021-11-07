@@ -50,6 +50,7 @@ class PostgresDAO {
                 if (err) throw err;
                 console.log("Table created")
                 this.client.query('INSERT INTO data(id, data) VALUES (1, $1)', {}, (err, res) => {
+                    if (err) throw err;
                     console.log("Row inserted")
                     this.client.end();
                     this.init = true;
@@ -59,6 +60,7 @@ class PostgresDAO {
             return
         }
         this.client.query('SELECT data FROM data LIMIT 1', (err, res) => {
+            if (err) throw err;
             this.client.end();
             cb(err, res)
         });
