@@ -15,9 +15,9 @@ exports.register = function () {
         const { commandName } = interaction;
         const senderId = interaction.user.id;
 
-        // if (commandName === 'help') {
-        //     await replyNotImplemented();//TODO faire l'aide
-        // } else
+        if (commandName === 'help') {
+            await replyNotImplemented(interaction);//TODO faire l'aide
+        } else
         if (commandName === 'profile') {
             const target = interaction.options.getUser('cible');
             const targetId = target ? target.id : senderId;
@@ -145,7 +145,7 @@ exports.register = function () {
                 }
                 if (display === 'line') {
                     for (let u of selectedUsers) {
-                        desc = desc + '**' + u.elyonClass.name + '** ' + u.name + ' (LVL: ' + u.lvl.toString() + ', ILVL: ' + u.ilvl + ')\n';
+                        desc = desc + '**' + (u.elyonClass === undefined ? 'UNDEFINED' : u.elyonClass.name) + '** ' + u.name + ' (LVL: ' + u.lvl + ', ILVL: ' + u.ilvl + ')\n';
                     }
                     res.setDescription(desc)
                 } else {
