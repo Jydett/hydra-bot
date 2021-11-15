@@ -27,30 +27,31 @@ exports.register = function () {
                 const response = []
                 if (senderId === targetId) {
 
-                    const buttonId = Math.random().toFixed(5) + ''
+                    // const buttonId = Math.random().toFixed(5) + ''
 
-                    const filter = i => i.customId === buttonId && i.user.id === targetId;
+                    // const filter = i => i.customId === buttonId && i.user.id === targetId;
+                    //
+                    // const collector = interaction.channel.createMessageComponentCollector({ filter, time: timeout, maxProcessed: 1 });
 
-                    const collector = interaction.channel.createMessageComponentCollector({ filter, time: timeout, maxProcessed: 1 });
+                    // collector.on('collect', async i => {
+                    //     ProfileDAO.users[targetId] = new User(targetId, i.user.username)
+                    //     await i.update({ content: 'A fake user was created', components: [] });
+                    // });
+                    //
+                    // collector.on('end', async collected => {
+                    //     await response[0].editReply({ content: 'Expiré', components: []})
+                    // });
 
-                    collector.on('collect', async i => {
-                        ProfileDAO.users[targetId] = new User(targetId, i.user.username)
-                        await i.update({ content: 'A fake user was created', components: [] });
-                    });
-
-                    collector.on('end', async collected => {
-                        await response[0].editReply({ content: 'Expiré', components: []})
-                    });
-
-                    const row = new MessageActionRow()
-                        .addComponents(
-                            new MessageButton()
-                                .setCustomId(buttonId)
-                                .setLabel('Oui')
-                                .setStyle('SUCCESS')
-                        )
-                    response[0] = interaction
-                    await interaction.reply({ content: ERROR_EMOJI + ' Vous n\'êtes pas dans la base de données, voulez vous vous inscrire ?', components: [row], ephemeral: true})
+                    // const row = new MessageActionRow()
+                    //     .addComponents(
+                    //         new MessageButton()
+                    //             .setCustomId(buttonId)
+                    //             .setLabel('Oui')
+                    //             .setStyle('SUCCESS')
+                    //     )
+                    // response[0] = interaction
+                    // await interaction.reply({ content: ERROR_EMOJI + ' Vous n\'êtes pas dans la base de données, voulez vous vous inscrire ?'/*, components: [row],*/, ephemeral: true})
+                    await interaction.reply({ content: ERROR_EMOJI + ' Vous n\'êtes pas dans la base de données, inscrivez-vous avec /gear edit [...]', ephemeral: true})
                 } else {
                     await interaction.reply({ content: ERROR_EMOJI + ' ' + target.username + ' n\'est pas dans la base de données', ephemeral: true})
                 }
