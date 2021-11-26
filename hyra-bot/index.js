@@ -1,4 +1,3 @@
-const config = require("./config.json");
 const Commands = require("./commands.js");
 const {client} = require("./client.js")
 const {fakeUsers} = require('./debug');
@@ -16,5 +15,5 @@ ProfileDAO.read(_ => {
         fakeUsers();
     }
 
-    client.login(config.BOT_TOKEN);
+    client.login(process.env.BOT_TOKEN);
 })

@@ -19,12 +19,12 @@ const slash_commands = [
                         .setDescription("Le nom de ton personnage en jeu")
                         .setRequired(false)
                 )
-                .addStringOption(opt =>
+                .addIntegerOption(opt =>
                     opt.setName("ilvl")
                         .setDescription("Le niveau de ton ilvl sur ton perso")
                         .setRequired(false)
                 )
-                .addStringOption(opt =>
+                .addIntegerOption(opt =>
                     opt.setName("lvl")
                         .setDescription("Le niveau de ton ilvl")
                         .setRequired(false)
@@ -95,7 +95,7 @@ const slash_commands = [
 ]
     .map(command => command.toJSON());
 
-const rest = new REST({ version: '9' }).setToken(CONFIG.BOT_TOKEN);
+const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN);
 
 rest.put(Routes.applicationGuildCommands(CONFIG.clientId, CONFIG.guildId), { body: slash_commands })
     .then(() => console.log('Successfully registered application commands.'))
